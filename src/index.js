@@ -1,11 +1,42 @@
 import {GraphQLServer} from 'graphql-yoga'
-
+//  Demo users data
+const users = [{
+    id: '1',
+    name: 'Majed',
+    email: 'myemail@example.com'
+},
+{
+    id: '2',
+    name: 'John',
+    email: 'John@example.com'
+},
+{
+    id: '3',
+    name: 'Eva',
+    email: 'Eva@example.com'
+},
+]
+const posts = [{
+    id: '1',
+    title: 'The great gatsby',
+    body: 'some text here'
+},
+{
+    id: '2',
+    title: 'Elon Musk Hobbies',
+    body: 'some text here '
+},
+{
+    id: '3',
+    title: 'Jeff Bizos cutting edge visionary',
+    body: 'some text here '
+},
+]
 // Type definitions (schema)
 const typeDefs = `
     type Query {
-        add(numbers: [Float!]): Float!
-        greeting(name: String, position: String): String!
-        grades: [Int!]!
+        users(query: String): [User!]!
+        posts(query: String): [Post!]!
         me: User!
         post: Post!
     }
@@ -29,26 +60,17 @@ const typeDefs = `
 
 // Resolvers
 const resolvers = {
-    Query: {
-        add(paret,args,ctx, info){
-            if(args.numbers.length === 0 ){
-                return 0
-            }  else {
-                return args.numbers.reduce ((accumulator, currentValue) => {
-                        return accumulator+ currentValue
-                })
-            }
+    Query: {    
+        users(parent, args, ctx, info){
+
+            return users.filter(user => {
+                return user.name.toLowerCase().includes(args.query.toLowerCase())
+            })
         },
-        grades(parent, args, cyx, info){
-            return [99,999,876]
-        },
-        greeting(parent,args,ctx,info){
-            
-            if(args.name && args.position){
-                return `Hello ${args.name}!! You are my favourite ${args.position}`
-            }else {
-                return "Hello!!!"
-            }  
+        posts(parent, args, ctx, info){
+            return posts.filter(post =>{
+                return post.body.toLowerCase().includes(args.query.toLowerCase()) || post.title.toLowerCase().includes(args.query.toLowerCase())
+            })
         },
          me(){
              return {
