@@ -39,6 +39,9 @@ const posts = [{
     author: '2'
 },
 ]
+
+
+
 // Type definitions (schema)
 const typeDefs = `
     type Query {
@@ -53,6 +56,7 @@ const typeDefs = `
         email: String!
         age: Int
         posts: [Post!]!
+
 
     }
     type Post {
@@ -73,7 +77,9 @@ const resolvers = {
 
     Query: {    
         users(parent, args, ctx, info){
-
+            if(!args.query){
+                return users
+            }
             return users.filter(user => {
                 return user.name.toLowerCase().includes(args.query.toLowerCase())
             })
@@ -111,6 +117,13 @@ const resolvers = {
            return users.find(user => {
                return user.id === parent.author
            })
+        }
+    },
+    User : {
+        posts(parent, args, ctx, info){
+            return posts.filter(post =>{
+                return post.author === parent.id
+            })
         }
     }
 }
