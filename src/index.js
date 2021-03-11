@@ -13,23 +13,30 @@ const users = [{
 {
     id: '3',
     name: 'Eva',
-    email: 'Eva@example.com'
+    email: 'Eva@example.com',
+    
 },
 ]
 const posts = [{
     id: '1',
     title: 'The great gatsby',
-    body: 'some text here'
+    body: 'some text here',
+    published: true,
+    author: '1'
 },
 {
     id: '2',
     title: 'Elon Musk Hobbies',
-    body: 'some text here '
+    body: 'some text here ',
+    published: true,
+    author: '1'
 },
 {
     id: '3',
     title: 'Jeff Bizos cutting edge visionary',
-    body: 'some text here '
+    body: 'some text here ',
+    published: true,
+    author: '2'
 },
 ]
 // Type definitions (schema)
@@ -45,6 +52,7 @@ const typeDefs = `
         name: String!
         email: String!
         age: Int
+        posts: [Post!]!
 
     }
     type Post {
@@ -52,6 +60,8 @@ const typeDefs = `
         title: String!
         body: String!
         published: Boolean!
+        author: User!
+        
     }
 `
     
@@ -60,6 +70,7 @@ const typeDefs = `
 
 // Resolvers
 const resolvers = {
+
     Query: {    
         users(parent, args, ctx, info){
 
@@ -68,9 +79,15 @@ const resolvers = {
             })
         },
         posts(parent, args, ctx, info){
-            return posts.filter(post =>{
-                return post.body.toLowerCase().includes(args.query.toLowerCase()) || post.title.toLowerCase().includes(args.query.toLowerCase())
-            })
+            if(!args.query){
+                return posts
+            }
+                return posts.filter(post =>{
+                    console.log(post)
+                    return post.body.toLowerCase().includes(args.query.toLowerCase()) || post.title.toLowerCase().includes(args.query.toLowerCase())
+                })
+           
+            
         },
          me(){
              return {
@@ -87,6 +104,14 @@ const resolvers = {
                  published: false
              }
          }
+    },
+
+    Post : {
+        author(parent, args, ctx, info){
+           return users.find(user => {
+               return user.id === parent.author
+           })
+        }
     }
 }
 
@@ -99,3 +124,5 @@ const server = new GraphQLServer({
 server.start(()=>{
     console.log("Server start running")
 })
+
+// video 14 - grapgQl basics schemas and queries
