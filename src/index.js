@@ -46,21 +46,25 @@ const comments = [
     id: "111",
     text: "comment 1",
     author: "2",
+    post: "2",
   },
   {
     id: "123",
     text: "comment 2",
     author: "2",
+    post: "2",
   },
   {
     id: "223",
     text: "comment 3",
     author: "1",
+    post: "3",
   },
   {
     id: "332",
     text: "comment 4",
     author: "3",
+    post: "1",
   },
 ];
 
@@ -89,12 +93,15 @@ const typeDefs = `
         body: String!
         published: Boolean!
         author: User!
+        comments: [Comment!]!
+        
         
     }
     type Comment {
         id: ID!
         text: String!
         author: User!
+        post: Post!
     }
 `;
 
@@ -147,11 +154,21 @@ const resolvers = {
         return user.id === parent.author;
       });
     },
+    comments(parent, args, ctx, info) {
+      return comments.filter((comment) => {
+        return comment.post == parent.id;
+      });
+    },
   },
   Comment: {
     author(parent, args, ctx, info) {
       return users.find((user) => {
         return user.id === parent.author;
+      });
+    },
+    post(parent, args, ctx, info) {
+      return posts.find((post) => {
+        return post.id == parent.post;
       });
     },
   },
@@ -178,4 +195,3 @@ const server = new GraphQLServer({
 server.start(() => {
   console.log("Server start running");
 });
-
